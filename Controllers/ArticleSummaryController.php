@@ -43,9 +43,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
 
     // 处理 $oai_url
     $oai_url = rtrim($oai_url, '/'); // 去除末尾的斜杠
-    if (!preg_match('/\/v\d+\/?$/', $oai_url)) {
-        $oai_url .= '/v1'; // 如果没有版本信息，则添加 /v1 - If there is no version information, add /v1
-    }
     // Open AI Input
     $successResponse = array(
       'response' => array(
