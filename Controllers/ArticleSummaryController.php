@@ -43,17 +43,31 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
 
         // 处理 $oai_url
         $oai_url = rtrim($oai_url, '/'); // 去除末尾的斜杠
+        // 构建 GET 请求 URL
+        $url = $oai_url . '/chat/completions' . '?' . http_build_query(array(
+                'model' => $oai_model,
+                'messages' => json_encode([
+                    [
+                        'role' => 'system',
+                        'content' => $oai_prompt
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => "input: \n" . $this->htmlToMarkdown($content),
+                    ]
+                ]),
+                'max_tokens' => 2048, // Adjust summary length if necessary
+                'temperature' => 0.7, // Adjust the randomness if necessary
+                'n' => 1 // Generate one summary
+            ));
 
-        // 发起请求 - Make request with cURL
+        // 初始化 cURL 会话 - Initialize cURL session
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $oai_url . '/chat/completions');
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $oai_key
+            'Authorization: Bearer ' . $oai_key,
         ));
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
 
         // 执行请求 - Execute the request
         $response = curl_exec($ch);
@@ -64,37 +78,38 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
         } else {
             // 如果请求成功 - If the request was successful
             $decodedResponse = json_decode($response, true);
+            $summary = null;
+
             // 检查生成结果 - Check if the response contains generated text
             if (isset($decodedResponse['choices'][0]['message']['content'])) {
                 $summary = $decodedResponse['choices'][0]['message']['content'];
-                echo json_encode(array(
-                    'response' => array(
-                        'data' => $summary,
-                        'error' => null
-                    ),
-                    'status' => 200
-                ));
-            } else {
-                echo json_encode(array(
-                    'response' => array(
-                        'data' => 'no summary generated',
-                        'error' => 'summary_error'
-                    ),
-                    'status' => 500
-                ));
             }
+
+            // 返回响应 - Return response
+            $successResponse = array(
+                'response' => array(
+                    'data' => $summary ? $summary : 'no summary generated',
+                    'error' => null
+                ),
+                'status' => 200
+            );
+
+            echo json_encode($successResponse);
         }
 
-        // 关闭 cURL - Close the cURL session
+        // 关闭 cURL 会话 - Close the cURL session
         curl_close($ch);
     }
 
-    private function isEmpty($item)
+
+    private
+    function isEmpty($item)
     {
         return $item === null || trim($item) === '';
     }
 
-    private function htmlToMarkdown($content)
+    private
+    function htmlToMarkdown($content)
     {
         // 创建 DOMDocument 对象 - Creating DOMDocument objects
         $dom = new DOMDocument();
