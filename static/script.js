@@ -69,7 +69,7 @@ async function summarizeButtonClick(target) {
   };
 
   try {
-    const response = await axios.post(url, data, {
+    const response = await axios.get(url, data, {
       headers: {
         'Content-Type': 'application/json'
       }
