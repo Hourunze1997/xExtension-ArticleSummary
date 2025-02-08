@@ -77,7 +77,7 @@ async function summarizeButtonClick(target) {
 
     const xresp = response.data;
     console.log(xresp);
-
+    console.log(response.status, xresp.response, xresp.response.data)
     if (response.status !== 200 || !xresp.response || !xresp.response.data) {
       throw new Error('请求失败 / Request Failed');
     }
