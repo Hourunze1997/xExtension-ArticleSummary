@@ -61,8 +61,8 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
                             "content" => "input: \n" . $this->htmlToMarkdown($content),
                         ]
                     ],
-                    "max_tokens" => 8192, // 你可以根据需要调整总结的长度 - You can adjust the length of the summary as needed.
-                    "temperature" => 0.6, // 你可以根据需要调整生成文本的随机性 - You can adjust the randomness/temperature of the generated text as needed
+                    "max_tokens" => 4096, // 你可以根据需要调整总结的长度 - You can adjust the length of the summary as needed.
+                    "temperature" => 0.7, // 你可以根据需要调整生成文本的随机性 - You can adjust the randomness/temperature of the generated text as needed
                     "n" => 1 // 生成一个总结 - Generate summary
                 ),
                 'provider' => 'openai',
