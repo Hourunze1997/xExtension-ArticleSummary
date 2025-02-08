@@ -100,7 +100,8 @@ async function sendOpenAIRequest(container, oaiParams) {
   try {
     let body = JSON.parse(JSON.stringify(oaiParams));
     delete body['oai_url'];
-    delete body['oai_key'];	  
+    delete body['oai_key'];
+    console.log(oaiParams.oai_key);
     const response = await fetch(oaiParams.oai_url, {
       method: 'POST',
       headers: {
