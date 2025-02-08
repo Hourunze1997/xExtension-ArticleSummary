@@ -125,6 +125,7 @@ async function sendOpenAIRequest(container, oaiParams) {
       }
 
       const chunk = decoder.decode(value, { stream: true });
+      console.log('Raw chunk response:', chunk);
       const text = JSON.parse(chunk)?.choices[0]?.message?.content || ''
       setOaiState(container, 0, null, marked.parse(text));
     }
