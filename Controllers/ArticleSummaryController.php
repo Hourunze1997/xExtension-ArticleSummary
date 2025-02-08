@@ -5,8 +5,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
     public function summarizeAction()
     {
         $this->view->_layout(false);
-        // 设置响应头为 JSON - Set response header to JSON
-        header('Content-Type: application/json');
 
         $oai_url = FreshRSS_Context::$user_conf->oai_url;
         $oai_key = FreshRSS_Context::$user_conf->oai_key;
@@ -67,6 +65,7 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Authorization: Bearer ' . $oai_key,
+            'Content-Type: application/json',
         ));
 
         // 执行请求 - Execute the request
