@@ -5,6 +5,8 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
     public function summarizeAction()
     {
         $this->view->_layout(false);
+        // 设置响应头为 JSON - Set response header to JSON
+        header('Content-Type: application/json');
 
         $oai_url = FreshRSS_Context::$user_conf->oai_url;
         $oai_key = FreshRSS_Context::$user_conf->oai_key;
@@ -41,72 +43,43 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
 
         // 处理 $oai_url
         $oai_url = rtrim($oai_url, '/'); // 去除末尾的斜杠
-        // 构建 GET 请求 URL
-        $url = $oai_url . '/chat/completions' . '?' . http_build_query(array(
-                'model' => $oai_model,
-                'messages' => json_encode([
-                    [
-                        'role' => 'system',
-                        'content' => $oai_prompt
+        // Open AI Input
+        $successResponse = array(
+            'response' => array(
+                'data' => array(
+                    // 判断url是否有版本结尾，如果有版本信息则不添加版本信息，如果没有则默认添加/v1 - Determine whether the URL ends with a version. If it does, no version information is added. If not, /v1 is added by default.
+                    "oai_url" => $oai_url . '/chat/completions',
+                    "oai_key" => $oai_key,
+                    "model" => $oai_model,
+                    "messages" => [
+                        [
+                            "role" => "system",
+                            "content" => $oai_prompt
+                        ],
+                        [
+                            "role" => "user",
+                            "content" => "input: \n" . $this->htmlToMarkdown($content),
+                        ]
                     ],
-                    [
-                        'role' => 'user',
-                        'content' => "input: \n" . $this->htmlToMarkdown($content),
-                    ]
-                ]),
-                'max_tokens' => 2048, // Adjust summary length if necessary
-                'temperature' => 0.7, // Adjust the randomness if necessary
-                'n' => 1 // Generate one summary
-            ));
-        var_dump($url);
-        // 初始化 cURL 会话 - Initialize cURL session
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization: Bearer ' . $oai_key,
-            'Content-Type: application/json',
-        ));
-
-        // 执行请求 - Execute the request
-        $response = curl_exec($ch);
-
-        // 检查请求是否成功 - Check if the request was successful
-        if ($response === false) {
-            echo json_encode(array('error' => curl_error($ch)));
-        } else {
-            // 如果请求成功 - If the request was successful
-            $decodedResponse = json_decode($response, true);
-            $summary = null;
-
-            // 检查生成结果 - Check if the response contains generated text
-            if (isset($decodedResponse['choices'][0]['message']['content'])) {
-                $summary = $decodedResponse['choices'][0]['message']['content'];
-            }
-
-            // 返回响应 - Return response
-            $successResponse = array(
-                'response' => array(
-                    'data' => $summary ? $summary : 'no summary generated',
-                    'error' => null
+                    "max_tokens" => 2048, // 你可以根据需要调整总结的长度 - You can adjust the length of the summary as needed.
+                    "temperature" => 0.7, // 你可以根据需要调整生成文本的随机性 - You can adjust the randomness/temperature of the generated text as needed
+                    "n" => 1 // 生成一个总结 - Generate summary
                 ),
-                'status' => 200
-            );
-        }
-
-        // 关闭 cURL 会话 - Close the cURL session
-        curl_close($ch);
+                'provider' => 'openai',
+                'error' => null
+            ),
+            'status' => 200
+        );
+        echo json_encode($successResponse);
+        return;
     }
 
-
-    private
-    function isEmpty($item)
+    private function isEmpty($item)
     {
         return $item === null || trim($item) === '';
     }
 
-    private
-    function htmlToMarkdown($content)
+    private function htmlToMarkdown($content)
     {
         // 创建 DOMDocument 对象 - Creating DOMDocument objects
         $dom = new DOMDocument();
