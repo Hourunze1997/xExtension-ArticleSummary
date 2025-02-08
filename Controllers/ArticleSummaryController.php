@@ -70,6 +70,26 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
             ),
             'status' => 200
         );
+
+        // Ollama API Input
+        if ($oai_provider === "ollama") {
+            $successResponse = array(
+                'response' => array(
+                    'data' => array(
+                        "oai_url" => rtrim($oai_url, '/') . '/api/generate',
+                        "oai_key" => $oai_key,
+                        "model" => $oai_model,
+                        "system" => $oai_prompt,
+                        "prompt" =>  $this->htmlToMarkdown($content),
+                        "stream" => true,
+                    ),
+                    'provider' => 'ollama',
+                    'error' => null
+                ),
+                'status' => 200
+            );
+        }
+        echo json_encode($successResponse);
         return;
     }
 
