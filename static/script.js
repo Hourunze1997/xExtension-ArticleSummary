@@ -77,9 +77,10 @@ async function summarizeButtonClick(target) {
 
     const xresp = response.data;
     console.log(xresp);
-
     if (response.status !== 200 || !xresp.response || !xresp.response.data) {
-      throw new Error('请求失败 / Request Failed');
+      throw new Error('请求失败 / Request Failed. Status: ' + response.status +
+          ', Response: ' + JSON.stringify(xresp.response));
+
     }
 
     if (xresp.response.error) {
@@ -87,12 +88,7 @@ async function summarizeButtonClick(target) {
     } else {
       // 解析 PHP 返回的参数
       const oaiParams = xresp.response.data;
-      const oaiProvider = xresp.response.provider;
-      if (oaiProvider === 'openai') {
-        await sendOpenAIRequest(container, oaiParams);
-      } else {
-        await sendOllamaRequest(container, oaiParams);
-      }
+      await sendOpenAIRequest(container, oaiParams);
     }
   } catch (error) {
     console.error(error);
@@ -104,7 +100,7 @@ async function sendOpenAIRequest(container, oaiParams) {
   try {
     let body = JSON.parse(JSON.stringify(oaiParams));
     delete body['oai_url'];
-    delete body['oai_key'];	  
+    delete body['oai_key'];
     const response = await fetch(oaiParams.oai_url, {
       method: 'POST',
       headers: {
