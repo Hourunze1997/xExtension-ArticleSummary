@@ -89,12 +89,7 @@ async function summarizeButtonClick(target) {
     } else {
       // 解析 PHP 返回的参数
       const oaiParams = xresp.response.data;
-      const oaiProvider = xresp.response.provider;
-      if (oaiProvider === 'openai') {
-        await sendOpenAIRequest(container, oaiParams);
-      } else {
-        await sendOllamaRequest(container, oaiParams);
-      }
+      await sendOpenAIRequest(container, oaiParams);
     }
   } catch (error) {
     console.error(error);
