@@ -116,18 +116,27 @@ async function sendOpenAIRequest(container, oaiParams) {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
+    let accumulatedData = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
-        setOaiState(container, 0, 'finish', null);
+        try {
+          console.log('Final Raw chunk response:', accumulatedData);
+          const parsedData = JSON.parse(accumulatedData);  // 这里解析完整 JSON
+          const text = parsedData?.choices[0]?.message?.content || '';
+
+          setOaiState(container, 0, null, marked.parse(text));  // 显示结果
+        } catch (error) {
+          console.error('JSON 解析错误:', error, '收到的数据:', accumulatedData);
+          setOaiState(container, 2, '数据解析失败', null);
+        }
         break;
       }
 
       const chunk = decoder.decode(value, { stream: true });
-      console.log('Raw chunk response:', chunk);
-      const text = JSON.parse(chunk)?.choices[0]?.message?.content || ''
-      setOaiState(container, 0, null, marked.parse(text));
+      console.log('Received chunk:', chunk);
+      accumulatedData += chunk;  // 累积 chunk
     }
   } catch (error) {
     console.error(error);
