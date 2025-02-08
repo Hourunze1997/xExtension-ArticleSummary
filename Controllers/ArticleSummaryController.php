@@ -92,8 +92,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
                 ),
                 'status' => 200
             );
-
-            echo json_encode($successResponse);
         }
 
         // 关闭 cURL 会话 - Close the cURL session
