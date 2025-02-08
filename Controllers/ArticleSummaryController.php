@@ -70,7 +70,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
             ),
             'status' => 200
         );
-        echo json_encode($successResponse);
         return;
     }
 
