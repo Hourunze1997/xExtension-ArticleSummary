@@ -60,7 +60,7 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
                 'temperature' => 0.7, // Adjust the randomness if necessary
                 'n' => 1 // Generate one summary
             ));
-
+        var_dump($url);
         // 初始化 cURL 会话 - Initialize cURL session
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
