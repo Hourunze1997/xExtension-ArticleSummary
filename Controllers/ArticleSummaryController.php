@@ -5,7 +5,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
   public function summarizeAction()
   {
     $this->view->_layout(false);
-    ob_start();
     // 设置响应头为 JSON - Set response header to JSON
     header('Content-Type: application/json');
 
@@ -90,8 +89,6 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
         'status' => 200
       );
     }
-    echo json_encode($successResponse);
-    ob_end_flush();
     return;
   }
 
