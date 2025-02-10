@@ -48,7 +48,7 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
             'response' => array(
                 'data' => array(
                     // 判断url是否有版本结尾，如果有版本信息则不添加版本信息，如果没有则默认添加/v1 - Determine whether the URL ends with a version. If it does, no version information is added. If not, /v1 is added by default.
-                    "oai_url" => $oai_url . '/chat/completions',
+                    "oai_url" => $oai_url,
                     "oai_key" => $oai_key,
                     "model" => $oai_model,
                     "messages" => [
@@ -76,7 +76,7 @@ class FreshExtension_ArticleSummary_Controller extends Minz_ActionController
             $successResponse = array(
                 'response' => array(
                     'data' => array(
-                        "oai_url" => rtrim($oai_url, '/') . '/api/generate',
+                        "oai_url" => rtrim($oai_url, '/'),
                         "oai_key" => $oai_key,
                         "model" => $oai_model,
                         "system" => $oai_prompt,
